@@ -48,6 +48,15 @@ public class SupplyPanel extends JPanel {
         String supplyType = e.getSource() == weeklyButton ? "weekly" : "monthly";
         StringBuilder log = new StringBuilder();
         
+        if ("monthly".equals(supplyType)) {
+            int currentMonth = LocalDate.now().getMonthValue();
+            if (currentMonth < 6 || currentMonth > 8) {
+                log.append("Сезонная поставка возможна только летом (июнь-август)!");
+                logArea.setText(log.toString());
+                return;
+            }
+        }
+        
         CoreDAO coreDAO = new CoreDAO();
         WoodDAO woodDAO = new WoodDAO();
         SupplyDAO supplyDAO = new SupplyDAO();
@@ -56,40 +65,52 @@ public class SupplyPanel extends JPanel {
         List<Wood> woods = woodDAO.getAllWoods();
         
         log.append("Начало обработки ")
-           .append(supplyType.equals("weekly") ? "еженедельной" : "ежемесячной")
+           .append(supplyType.equals("weekly") ? "еженедельной" : "сезонной")
            .append(" поставки\n");
         
         if ("weekly".equals(supplyType)) {
             for (Core core : cores) {
-                if (core.getQuantity() < 20) {
-                    int amount = 20 - core.getQuantity();
-                    coreDAO.updateCoreQuantity(core.getId(), 20);
+                int currentQuantity = coreDAO.getAvailableQuantity(core.getId());
+                if (currentQuantity < 15) {
+                    int amount = 15 - currentQuantity;
+                    coreDAO.updateCoreQuantity(core.getId(), 15);
                     log.append("Сердцевина '").append(core.getType())
                        .append("' пополнена на ").append(amount)
-                       .append(" (теперь 20)\n");
+                       .append(" (теперь 15)\n");
+                }
+                else {
+                    log.append("Сердцевин '").append(core.getType())
+                       .append("' достаточно\n");
                 }
             }
             for (Wood wood : woods) {
-                if (wood.getQuantity() < 20) {
-                    int amount = 20 - wood.getQuantity();
-                    woodDAO.updateWoodQuantity(wood.getId(), 20);
+                int currentQuantity = woodDAO.getAvailableQuantity(wood.getId());
+                if (currentQuantity < 15) {
+                    int amount = 15 - currentQuantity;
+                    woodDAO.updateWoodQuantity(wood.getId(), 15);
                     log.append("Древесина '").append(wood.getType())
                        .append("' пополнена на ").append(amount)
-                       .append(" (теперь 20)\n");
+                       .append(" (теперь 15)\n");
+                }
+                else {
+                    log.append("Древесины '").append(wood.getType())
+                       .append("' достаточно\n");
                 }
             }
         } else {
             for (Core core : cores) {
-                coreDAO.updateCoreQuantity(core.getId(), core.getQuantity() + 25);
+                int currentQuantity = coreDAO.getAvailableQuantity(core.getId());
+                coreDAO.updateCoreQuantity(core.getId(), currentQuantity + 25);
                 log.append("Сердцевина '").append(core.getType())
                    .append("' увеличена на 25 (теперь ")
-                   .append(core.getQuantity() + 25).append(")\n");
+                   .append(currentQuantity + 25).append(")\n");
             }
             for (Wood wood : woods) {
-                woodDAO.updateWoodQuantity(wood.getId(), wood.getQuantity() + 25);
+                int currentQuantity = woodDAO.getAvailableQuantity(wood.getId());
+                woodDAO.updateWoodQuantity(wood.getId(), currentQuantity + 25);
                 log.append("Древесина '").append(wood.getType())
                    .append("' увеличена на 25 (теперь ")
-                   .append(wood.getQuantity() + 25).append(")\n");
+                   .append(currentQuantity + 25).append(")\n");
             }
         }
         

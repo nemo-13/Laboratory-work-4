@@ -70,12 +70,27 @@ public class Database {
 
     private void initializeComponents() {
         try (Connection conn = getConnection()) {
-
             insertComponent(conn, "cores", 1, "Перо феникса", 100.0, 0);
             insertComponent(conn, "cores", 2, "Волос единорога", 80.0, 0);
+            insertComponent(conn, "cores", 3, "Сердце дракона", 120.0, 0);
+            insertComponent(conn, "cores", 4, "Нерв крыла гиппогрифа", 90.0, 0);
+            insertComponent(conn, "cores", 5, "Волос вейлы", 110.0, 0);
+            insertComponent(conn, "cores", 6, "Чешуя дракона", 95.0, 0);
+            insertComponent(conn, "cores", 7, "Перо гремучей ивы", 85.0, 0);
+            insertComponent(conn, "cores", 8, "Волос русалки", 105.0, 0);
+            insertComponent(conn, "cores", 9, "Коготь дементора", 130.0, 0);
+            insertComponent(conn, "cores", 10, "Кристалл василиска", 115.0, 0);
             
             insertComponent(conn, "woods", 1, "Остролист", 50.0, 0);
             insertComponent(conn, "woods", 2, "Орешник", 40.0, 0);
+            insertComponent(conn, "woods", 3, "Дуб", 60.0, 0);
+            insertComponent(conn, "woods", 4, "Кипарис", 45.0, 0);
+            insertComponent(conn, "woods", 5, "Виноградная лоза", 55.0, 0);
+            insertComponent(conn, "woods", 6, "Ель", 35.0, 0);
+            insertComponent(conn, "woods", 7, "Кедр", 65.0, 0);
+            insertComponent(conn, "woods", 8, "Боярышник", 70.0, 0);
+            insertComponent(conn, "woods", 9, "Акация", 75.0, 0);
+            insertComponent(conn, "woods", 10, "Красное дерево", 80.0, 0);
             
         } catch (SQLException e) {
             handleSQLException("Ошибка инициализации компонентов", e);

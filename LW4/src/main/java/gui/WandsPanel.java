@@ -89,30 +89,35 @@ public class WandsPanel extends JPanel {
             return;
         }
         
+        CoreDAO coreDAO = new CoreDAO();
+        WoodDAO woodDAO = new WoodDAO();
+        
         Core selectedCore = cores.get(coreIndex);
         Wood selectedWood = woods.get(woodIndex);
-
-        if (selectedCore.getQuantity() < 1) {
+        
+        int actualCoreQuantity = coreDAO.getAvailableQuantity(selectedCore.getId());
+        int actualWoodQuantity = woodDAO.getAvailableQuantity(selectedWood.getId());
+        
+        if (actualCoreQuantity < 1) {
             statusLabel.setText("Недостаточно сердцевин: " + selectedCore.getType());
+            refreshData(); // Обновляем данные
             return;
         }
         
-        if (selectedWood.getQuantity() < 1) {
+        if (actualWoodQuantity < 1) {
             statusLabel.setText("Недостаточно древесины: " + selectedWood.getType());
+            refreshData();
             return;
         }
-
+        
         double price = (selectedCore.getPrice() + selectedWood.getPrice()) * 1.1;
         
         WandDAO wandDAO = new WandDAO();
         wandDAO.createWand(selectedCore.getId(), selectedWood.getId(), price, LocalDate.now());
-
-        CoreDAO coreDAO = new CoreDAO();
-        coreDAO.updateCoreQuantity(selectedCore.getId(), selectedCore.getQuantity() - 1);
         
-        WoodDAO woodDAO = new WoodDAO();
-        woodDAO.updateWoodQuantity(selectedWood.getId(), selectedWood.getQuantity() - 1);
-
+        coreDAO.updateCoreQuantity(selectedCore.getId(), actualCoreQuantity - 1);
+        woodDAO.updateWoodQuantity(selectedWood.getId(), actualWoodQuantity - 1);
+        
         refreshData();
         statusLabel.setText("Палочка создана! Цена: " + String.format("%.2f", price) + " галлеонов");
     }
